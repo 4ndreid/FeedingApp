@@ -1,0 +1,17 @@
+{
+  "name": "Dairy Farm Dashboard",
+  "short_name": "Dairy Dash",
+  "description": "Dashboard Eksekutif Dairy Farm",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef2ee",
+  "theme_color": "#1f7a4d",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1998/1998610.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
