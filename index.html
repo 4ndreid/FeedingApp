@@ -14,6 +14,9 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- jsPDF (untuk Unduh Laporan PDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -151,6 +154,38 @@
   @media(max-width:1150px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.g-3{grid-template-columns:repeat(2,1fr)}.equip{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.g-2,.g-3{grid-template-columns:1fr}.span-2{grid-column:auto}.equip{grid-template-columns:1fr}.brand h1{font-size:17px}.btn .btxt{display:none}}
 
+  /* ---- Mobile friendly: layar kecil (HP) ---- */
+  .table-scroll{-webkit-overflow-scrolling:touch}
+  .table-scroll table td:first-child,.table-scroll table th:first-child{position:sticky;left:0;background:var(--surface);z-index:2}
+  @media(max-width:640px){
+    .wrap{padding:0 14px}
+    .top-in{padding:12px 14px;gap:10px}
+    .section{padding-top:26px}
+    .sec-head h2{font-size:12.5px}
+    .card{padding:14px 14px 16px}
+    .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+    .kpi{padding:14px 14px 12px}
+    .kpi .val{font-size:21px}
+    .chart-box{height:220px}
+    .chart-box.tall{height:260px}
+    table{font-size:12px}
+    th,td{padding:8px 8px}
+
+    /* Tabel "Stok Bahan Kering" jadi tampilan kartu (tanpa perlu zoom/scroll horizontal) */
+    #stok-table thead{display:none}
+    #stok-table,#stok-table tbody,#stok-table tr,#stok-table td{display:block;width:100%}
+    #stok-table{border-collapse:separate}
+    #stok-table tr{margin-bottom:10px;border:1px solid var(--line);border-radius:12px;padding:2px 14px;background:var(--surface)}
+    #stok-table td{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);text-align:right}
+    #stok-table td:last-child{border-bottom:none}
+    #stok-table td::before{content:attr(data-label);font-weight:700;color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;text-align:left}
+  }
+  @media(max-width:420px){
+    .kpi-grid{grid-template-columns:1fr}
+    .logo{width:38px;height:38px}.logo svg{width:22px;height:22px}
+    .brand h1{font-size:15px}.brand p{font-size:11.5px}
+  }
+
   body.tv{padding-bottom:24px}
   body.tv .brand h1{font-size:22px}
   body.tv .rangesel,body.tv #pdf-btn,body.tv #refresh-btn{display:none}
@@ -210,27 +245,6 @@
   tr.flag-danger td:first-child{box-shadow:inset 3px 0 0 var(--danger)}
   tr.flag-warning td:first-child{box-shadow:inset 3px 0 0 var(--amber)}
 
-  /* ---- Insight & Rekomendasi ---- */
-  .insight-list{display:flex;flex-direction:column;gap:10px}
-  .insight{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-  .insight::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
-  .insight.danger::before{background:var(--danger)}
-  .insight.warning::before{background:var(--amber)}
-  .insight.ok::before{background:var(--primary)}
-  .insight .iico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
-  .insight.danger .iico{background:var(--danger-soft);color:var(--danger)}
-  .insight.warning .iico{background:#fbf1dc;color:#a9740a}
-  .insight.ok .iico{background:var(--ok-soft);color:#127a44}
-  .insight .iico svg{width:18px;height:18px}
-  .insight h4{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .insight .sev-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
-  .insight.danger .sev-tag{background:var(--danger-soft);color:var(--danger)}
-  .insight.warning .sev-tag{background:#fbf1dc;color:#a9740a}
-  .insight.ok .sev-tag{background:var(--ok-soft);color:#127a44}
-  .insight p{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5}
-  .insight .rec{font-size:12.5px;color:var(--ink);margin-top:7px;font-weight:600;background:#f7faf8;border-radius:9px;padding:8px 11px;display:flex;gap:7px}
-  .insight .rec b{color:var(--primary);font-weight:800}
-
   @media(max-width:1150px){.stat-grid{grid-template-columns:repeat(2,1fr)}.nutri-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:820px){.stat-grid{grid-template-columns:1fr 1fr}.detail-toolbar{flex-direction:column;align-items:stretch}.search-box input{width:100%}.nutri-grid{grid-template-columns:1fr}.nutri-rows{grid-template-columns:1fr}}
 
@@ -240,7 +254,7 @@
     header.top,#loader,#range-sel,#tv-btn,#pdf-btn,#refresh-btn,.top-meta .chip,.tabs2,.search-box,#detail-csv-btn{display:none!important}
     .wrap{max-width:100%;padding:0}
     .section{padding-top:14px;break-inside:avoid}
-    .card,.kpi,.stat,.insight{break-inside:avoid;box-shadow:none;border:1px solid #d7e0d9}
+    .card,.kpi,.stat{break-inside:avoid;box-shadow:none;border:1px solid #d7e0d9}
     .reveal{opacity:1!important;transform:none!important;animation:none!important}
     .chart-box{height:230px}
   }
@@ -280,9 +294,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
         <span class="btxt">Mode TV</span>
       </button>
-      <button class="btn ghost" id="pdf-btn" data-testid="pdf-button" title="Ekspor / cetak PDF">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h9l3 3v4M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-        <span class="btxt">Ekspor PDF</span>
+      <button class="btn ghost" id="pdf-btn" data-testid="pdf-button" title="Unduh laporan eksekutif (PDF)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <span class="btxt" id="pdf-btn-txt">Download</span>
       </button>
       <button class="btn" id="refresh-btn" data-testid="refresh-button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -307,6 +321,20 @@
       <div class="card"><div class="card-head"><div><h3>Produksi per Ekor Laktasi</h3><div class="sub">Liter/ekor · rata-rata tertimbang (ADM)</div></div><span class="tag">L/ekor</span></div><div class="chart-box"><canvas id="c-perekor" data-testid="chart-per-ekor"></canvas></div></div>
       <div class="card"><div class="card-head"><div><h3>ADM per Grup Laktasi</h3><div class="sub">Produksi rata-rata harian: Fresh · Early · Late</div></div><span class="tag">L/ekor</span></div><div class="chart-box"><canvas id="c-admgrup" data-testid="chart-adm-grup"></canvas></div></div>
       <div class="card"><div class="card-head"><div><h3>Milk Yield / kg TMR</h3><div class="sub">Liter susu per kg intake laktasi</div></div><span class="tag">L/kg</span></div><div class="chart-box"><canvas id="c-yieldtmr" data-testid="chart-yield-tmr"></canvas></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><h2>DMI vs ADM per Grup</h2><div class="line"></div></div>
+    <div class="grid g-2">
+      <div class="card span-2">
+        <div class="card-head">
+          <div><h3>Perbandingan DMI vs ADM</h3><div class="sub">Dry Matter Intake (kg) dibanding rata-rata produksi susu/ekor (L) — pilih grup laktasi</div></div>
+          <span class="tag">kg &amp; L/ekor</span>
+        </div>
+        <div class="tabs2" id="dmiadm-tabs" data-testid="dmiadm-tabs"></div>
+        <div class="chart-box tall"><canvas id="c-dmiadm" data-testid="chart-dmi-adm"></canvas></div>
+      </div>
     </div>
   </section>
 
@@ -369,11 +397,6 @@
         <div class="table-scroll"><table data-testid="stok-table"><thead><tr><th>Item</th><th>Kategori</th><th class="num">Awal</th><th class="num">Masuk</th><th class="num">Keluar</th><th class="num">Stok Akhir</th><th>Status</th></tr></thead><tbody id="stok-body"></tbody></table></div>
       </div>
     </div>
-  </section>
-
-  <section class="section">
-    <div class="sec-head"><h2>Insight &amp; Rekomendasi Nutrisionist</h2><div class="line"></div></div>
-    <div class="insight-list" id="insight-list" data-testid="insight-list"></div>
   </section>
 
   <section class="section">
@@ -619,9 +642,9 @@ function renderStok(list){
     var cls = st==='HABIS' ? 'habis' : (r.stockAkhir!==null && r.stockAwal!==null && r.stockAkhir < r.stockAwal*0.2 && r.stockAkhir>0 ? 'low' : 'ok');
     var lab = st==='HABIS' ? 'HABIS' : (cls==='low' ? 'MENIPIS' : (st||'OK'));
     var tr=document.createElement('tr');
-    tr.innerHTML='<td style="font-weight:600">'+r.nama+'</td><td style="color:var(--muted)">'+(r.kategori||'')+'</td>'+
-      '<td class="num">'+fmt(r.stockAwal,0)+'</td><td class="num">'+fmt(r.masuk,0)+'</td><td class="num">'+fmt(r.keluar,0)+'</td>'+
-      '<td class="num" style="font-weight:700">'+fmt(r.stockAkhir,0)+'</td><td><span class="pill '+cls+'">'+lab+'</span></td>';
+    tr.innerHTML='<td data-label="Item" style="font-weight:600">'+r.nama+'</td><td data-label="Kategori" style="color:var(--muted)">'+(r.kategori||'')+'</td>'+
+      '<td data-label="Awal" class="num">'+fmt(r.stockAwal,0)+'</td><td data-label="Masuk" class="num">'+fmt(r.masuk,0)+'</td><td data-label="Keluar" class="num">'+fmt(r.keluar,0)+'</td>'+
+      '<td data-label="Stok Akhir" class="num" style="font-weight:700">'+fmt(r.stockAkhir,0)+'</td><td data-label="Status"><span class="pill '+cls+'">'+lab+'</span></td>';
     body.appendChild(tr);
   });
   if(!arr.length) body.innerHTML='<tr><td colspan="7" style="color:var(--muted)">Tidak ada data.</td></tr>';
@@ -678,6 +701,9 @@ var DETAIL_TABS = [
   { key:'milkQuality', label:'Kualitas Susu', cols:[
     {k:'adm', l:'ADM', dec:1}, {k:'fat', l:'Fat %', dec:2}, {k:'protein', l:'Protein %', dec:2},
     {k:'totalSolid', l:'Total Solid %', dec:2}, {k:'alfatoxin', l:'Aflatoksin', dec:3}
+  ]},
+  { key:'dmiGrup', label:'DMI per Grup', cols:[
+    {k:'fresh', l:'Fresh (kg)', dec:2}, {k:'early', l:'Early (kg)', dec:2}, {k:'late', l:'Late (kg)', dec:2}, {k:'rata', l:'Rata-rata (kg)', dec:2}
   ]},
   { key:'nutriFresh', series:'nutrisiTMR', label:'Nutrisi TMR — Fresh', cols:[
     {k:'freshDMI', l:'DMI (kg)', dec:2}, {k:'freshCP', l:'CP %', dec:2}, {k:'freshTDN', l:'TDN %', dec:2},
@@ -893,6 +919,64 @@ document.getElementById('nutri-tabs').addEventListener('click', function(e){
 });
 
 /* =========================================================
+   DMI vs ADM PER GRUP — perbandingan Dry Matter Intake (kg)
+   dengan rata-rata produksi susu/ekor (L), per grup laktasi
+   ========================================================= */
+var DMIADM_GROUPS = [
+  { key:'fresh', label:'Fresh' },
+  { key:'early', label:'Early' },
+  { key:'late', label:'Late' }
+];
+var DASTATE = { group:'fresh' };
+
+function renderDmiAdmTabs(){
+  var box = document.getElementById('dmiadm-tabs'); if(!box) return; box.innerHTML='';
+  DMIADM_GROUPS.forEach(function(g){
+    var b = document.createElement('button');
+    b.textContent = g.label; b.className = (g.key===DASTATE.group?'on':''); b.setAttribute('data-key', g.key);
+    b.setAttribute('data-testid','dmiadm-tab-'+g.key);
+    box.appendChild(b);
+  });
+}
+
+function renderDmiAdmChart(D, days){
+  if(!document.getElementById('c-dmiadm')) return;
+  var g = DASTATE.group;
+  var DM = D.dmiGrup||[], AD = D.adm||[];
+  var dmArr = (days && DM.length>days) ? DM.slice(DM.length-days) : DM;
+  var adArr = (days && AD.length>days) ? AD.slice(AD.length-days) : AD;
+  // gabungkan tanggal dari kedua sumber (union, urut naik) supaya sinkron di sumbu-X
+  var dateSet = {};
+  dmArr.forEach(function(r){ dateSet[r.date]=true; });
+  adArr.forEach(function(r){ dateSet[r.date]=true; });
+  var dates = Object.keys(dateSet).sort();
+  var dmMap = {}; dmArr.forEach(function(r){ dmMap[r.date]=r[g]; });
+  var adMap = {}; adArr.forEach(function(r){ adMap[r.date]=r[g]; });
+  var dmVals = dates.map(function(d){ return dmMap[d]!==undefined?dmMap[d]:null; });
+  var adVals = dates.map(function(d){ return adMap[d]!==undefined?adMap[d]:null; });
+  var lbls = dates.map(function(d){ return fmtDate(d); });
+
+  mk('c-dmiadm', { type:'line', data:{ labels:lbls, datasets:[
+      Object.assign(lineDS('DMI (kg)', dmVals, COL.teal, false), {yAxisID:'y'}),
+      Object.assign(lineDS('ADM (L/ekor)', adVals, COL.primary, false), {yAxisID:'y1'})
+    ]}, options: baseOpts({
+      plugins:{legend:{display:true,position:'top',align:'end',labels:{usePointStyle:true,boxWidth:8,padding:12}}},
+      scales:{
+        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:8}},
+        y:{position:'left', grid:{color:'#eef1ef'}, border:{display:false}, ticks:{padding:8}, title:{display:true,text:'DMI (kg)'}},
+        y1:{position:'right', grid:{display:false}, border:{display:false}, ticks:{padding:8}, title:{display:true,text:'ADM (L/ekor)'}}
+      }
+    }) });
+}
+
+document.getElementById('dmiadm-tabs').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  DASTATE.group = b.getAttribute('data-key');
+  renderDmiAdmTabs();
+  if(STATE.data) renderDmiAdmChart(STATE.data, STATE.days);
+});
+
+/* =========================================================
    RINGKASAN STATISTIK PERIODE — avg/min/max
    ========================================================= */
 var STAT_DEFS = [
@@ -928,135 +1012,9 @@ function renderStats(D){
   });
 }
 
-/* =========================================================
-   INSIGHT & REKOMENDASI — logika Nutrisionist
-   (ambang batas mengikuti praktik umum sapi perah TMR;
-   sesuaikan dengan SOP farm Anda bila berbeda)
-   ========================================================= */
 function lastValid(arr, key){
   for(var i=arr.length-1;i>=0;i--){ var v=arr[i][key]; if(v!==null && v!==undefined && !isNaN(v)) return {v:v, date:arr[i].date}; }
   return null;
-}
-function trendAvg(arr, key, n){
-  var vals = arr.filter(function(r){return r[key]!==null && r[key]!==undefined && !isNaN(r[key]);}).slice(-n).map(function(r){return r[key];});
-  if(!vals.length) return null;
-  return vals.reduce(function(a,b){return a+b;},0)/vals.length;
-}
-var ICO_INFO = '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>';
-var ICO_WARN = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>';
-var ICO_OK = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>';
-
-function buildInsights(D){
-  var out = [];
-  var P = seriesSlice(D,'produksi'), FE = seriesSlice(D,'feedEff'), MQ = seriesSlice(D,'milkQuality');
-
-  // 1. FCR efisiensi
-  var fcr = lastValid(FE,'fcr'), fcrAvg = trendAvg(FE,'fcr',7);
-  if(fcr){
-    if(fcr.v>1.8) out.push({sev:'danger', title:'FCR Sangat Tidak Efisien ('+fmt(fcr.v,2)+' kg DM/L)', desc:'FCR terbaru ('+fmtDate(fcr.date)+') berada jauh di atas target umum 1.3–1.6 kg DM/L. Ini mengindikasikan pakan tidak terkonversi optimal menjadi susu.', rec:'Evaluasi ulang formulasi ransum (rasio hijauan:konsentrat), cek kualitas silase (NDF/starch), dan periksa konsistensi bunk management &amp; waktu akses pakan.'});
-    else if(fcr.v>1.6) out.push({sev:'warning', title:'FCR di Atas Target ('+fmt(fcr.v,2)+' kg DM/L)', desc:'FCR sedikit di atas rentang efisien 1.3–1.6 kg DM/L pada '+fmtDate(fcr.date)+'.', rec:'Pantau homogenitas TMR (particle size, mixing time) dan pastikan tidak ada sorting oleh sapi terutama grup Fresh &amp; Early.'});
-    else out.push({sev:'ok', title:'FCR dalam Rentang Efisien ('+fmt(fcr.v,2)+' kg DM/L)', desc:'Konversi pakan ke susu berada pada rentang target industri.', rec:'Pertahankan konsistensi formulasi &amp; jadwal feeding saat ini.'});
-  }
-
-  // 2. Waste
-  var waste = lastValid(P,'wastePct');
-  if(waste){
-    var wp = waste.v*100;
-    if(wp>8) out.push({sev:'danger', title:'Waste Pakan Tinggi ('+fmt(wp,2)+'%)', desc:'Sisa pakan pada '+fmtDate(waste.date)+' melebihi 8% dari total AFI, jauh di atas target &lt;5%.', rec:'Turunkan jumlah push-up/feeding frekuensi ditingkatkan, tinjau ulang refusal target per pen, dan cek kualitas palatabilitas TMR (bau, suhu, kontaminasi jamur).'});
-    else if(wp>5) out.push({sev:'warning', title:'Waste Mendekati Batas ('+fmt(wp,2)+'%)', desc:'Persentase waste di atas target 5% pada '+fmtDate(waste.date)+'.', rec:'Evaluasi feed-out rate dan jam pemberian pakan; pertimbangkan penyesuaian jumlah AFI agar mendekati bunk score target.'});
-  }
-
-  // 3. Dry Matter %
-  var dm = lastValid(P,'dmPct');
-  if(dm){
-    var dmp = dm.v*100;
-    if(dmp<45 || dmp>58) out.push({sev:'warning', title:'DM Ransum di Luar Rentang Ideal ('+fmt(dmp,1)+'%)', desc:'DM% TMR pada '+fmtDate(dm.date)+' berada di luar rentang umum 45–58% untuk sapi laktasi.', rec:(dmp<45?'DM terlalu rendah berpotensi menurunkan intake — periksa kadar air silase/hijauan segar dan kurangi penambahan air saat mixing.':'DM terlalu tinggi berisiko sorting &amp; penurunan palatabilitas — tambahkan sedikit air atau bahan basah saat mixing TMR.')});
-  }
-
-  // 4. Laba/Rugi
-  var lr = lastValid(FE,'labaRugi'), lrAvg = trendAvg(FE,'labaRugi',5);
-  if(lr){
-    if(lr.v<0) out.push({sev:'danger', title:'Rugi Harian pada '+fmtDate(lr.date), desc:'Estimasi profitabilitas harian negatif sebesar Rp '+fmtC(Math.abs(lr.v))+'.', rec:'Bandingkan Feed Cost/L terhadap harga jual susu saat ini; cari peluang efisiensi biaya pakan tanpa mengorbankan performa produksi.'});
-    else if(lrAvg!==null && lrAvg<lr.v*0.5 && lr.v>0) out.push({sev:'ok', title:'Profitabilitas Membaik', desc:'Laba harian terbaru (Rp '+fmtC(lr.v)+') berada di atas rata-rata 5 hari terakhir.', rec:'Dokumentasikan praktik manajemen pakan saat ini sebagai acuan SOP.'});
-  }
-
-  // 5. Milk yield per kg TMR trend
-  var yNow = trendAvg(P,'milkYieldTMR',3), yPrev = trendAvg(P.slice(0,Math.max(0,P.length-3)),'milkYieldTMR',7);
-  if(yNow!==null && yPrev!==null && yPrev>0){
-    var chg = (yNow-yPrev)/yPrev;
-    if(chg < -0.05) out.push({sev:'warning', title:'Efisiensi Produksi Menurun', desc:'Milk yield/kg TMR turun sekitar '+fmt(Math.abs(chg*100),1)+'% dibanding rata-rata sebelumnya.', rec:'Cek kesehatan rumen (BCS, konsistensi feses), tinjau perubahan batch bahan baku terbaru, dan pastikan tidak ada heat stress atau perubahan cuaca ekstrem.'});
-  }
-
-  // 6. Milk quality (fat/protein)
-  var fat = lastValid(MQ,'fat'), prot = lastValid(MQ,'protein');
-  if(fat && fat.v<3.2) out.push({sev:'warning', title:'Kadar Fat Susu Rendah ('+fmt(fat.v,2)+'%)', desc:'Fat susu di bawah standar umum 3.2–3.5% pada '+fmtDate(fat.date)+'.', rec:'Tingkatkan effective fiber (peNDF) dalam ransum dan cek risiko asidosis subklinis (SARA).'});
-  if(prot && prot.v<2.9) out.push({sev:'warning', title:'Kadar Protein Susu Rendah ('+fmt(prot.v,2)+'%)', desc:'Protein susu di bawah standar umum ≥2.9–3.0% pada '+fmtDate(prot.date)+'.', rec:'Evaluasi kecukupan energi (NEL) &amp; keseimbangan protein degradable/undegradable (RDP:RUP) dalam ransum.'});
-
-  // 6b. Nutrisi TMR per status — CP, TDN, Ca:P
-  var NT = D.nutrisiTMR||[];
-  NUTRI_GROUPS.forEach(function(g){
-    var cp = lastValid(NT, g.prefix+'CP'), tdn = lastValid(NT, g.prefix+'TDN'), ca = lastValid(NT, g.prefix+'Ca');
-    if(cp && !inRange(cp.v, g.cp)){
-      var lowcp = cp.v < g.cp[0];
-      out.push({sev: Math.abs(cp.v-(g.cp[0]+g.cp[1])/2) > (g.cp[1]-g.cp[0]) ? 'danger':'warning',
-        title:'CP Ransum '+g.label+' '+(lowcp?'Rendah':'Tinggi')+' ('+fmt(cp.v,2)+'%)',
-        desc:'CP ransum grup '+g.label+' di luar target '+g.cp[0]+'–'+g.cp[1]+'% pada '+fmtDate(cp.date)+'.',
-        rec: lowcp ? 'Tambah sumber protein (bungkil kedelai/CGM) sesuai kebutuhan grup '+g.label+'.' : 'Turunkan porsi sumber protein tinggi untuk efisiensi biaya &amp; hindari kelebihan N (beban ginjal/lingkungan).'});
-    }
-    if(tdn && !inRange(tdn.v, g.tdn)){
-      var lowtdn = tdn.v < g.tdn[0];
-      out.push({sev: lowtdn?'warning':'warning',
-        title:'TDN Ransum '+g.label+' '+(lowtdn?'Rendah':'Tinggi')+' ('+fmt(tdn.v,2)+'%)',
-        desc:'TDN (energi) grup '+g.label+' di luar target '+g.tdn[0]+'–'+g.tdn[1]+'% pada '+fmtDate(tdn.date)+'.',
-        rec: lowtdn ? 'Tingkatkan sumber energi (konsentrat/biji-bijian) agar densitas energi ransum tercapai.' : 'Evaluasi risiko over-conditioning/asidosis; pertimbangkan sedikit menurunkan porsi konsentrat.'});
-    }
-    if(g.caLowIsGood && ca && ca.v > g.ca[1]){
-      out.push({sev: ca.v>g.ca[1]*1.4?'danger':'warning',
-        title:'Ca Ransum Close Up Terlalu Tinggi ('+fmt(ca.v,2)+'%)',
-        desc:'Sapi close-up idealnya diberi Ca RENDAH ('+g.ca[0]+'–'+g.ca[1]+'%) agar mekanisme homeostasis Ca aktif sebelum partus. Nilai saat ini di atas target.',
-        rec:'Tinjau ulang sumber mineral pada ransum close-up (kurangi bahan tinggi Ca / gunakan anionic salts / DCAD diet) untuk menurunkan risiko milk fever &amp; hipokalsemia subklinis pasca-partus.'});
-    }
-  });
-
-  // 7. Stok silase kritis
-  (D.stokSilase||[]).forEach(function(r){
-    if(String(r.bungker).toUpperCase()==='TOTAL') return;
-    var pct = (r.pctTerisi||0)*100;
-    if(pct>0 && pct<15) out.push({sev:'danger', title:'Stok Silase Kritis — '+r.bungker, desc:'Bungker '+r.bungker+' tersisa hanya '+fmt(pct,1)+'% ('+fmt(r.stockAkhir,1)+' ton).', rec:'Segera jadwalkan pengisian ulang / panen silase berikutnya untuk menghindari gap suplai TMR.'});
-    else if(pct>0 && pct<30) out.push({sev:'warning', title:'Stok Silase Menipis — '+r.bungker, desc:'Bungker '+r.bungker+' tersisa '+fmt(pct,1)+'% ('+fmt(r.stockAkhir,1)+' ton).', rec:'Rencanakan pengadaan/pemindahan stok dalam 1–2 minggu ke depan.'});
-  });
-
-  // 8. Bahan kering habis/menipis
-  var habis = (D.stokBahanKering||[]).filter(function(r){ return String(r.status||'').toUpperCase()==='HABIS'; });
-  var menipis = (D.stokBahanKering||[]).filter(function(r){ return r.stockAkhir!==null && r.stockAwal!==null && r.stockAkhir < r.stockAwal*0.2 && r.stockAkhir>0; });
-  if(habis.length) out.push({sev:'danger', title:'Bahan Baku Habis ('+habis.length+' item)', desc:habis.map(function(r){return r.nama;}).join(', ')+' berstatus habis di gudang.', rec:'Prioritaskan pembelian/pengiriman untuk item ini agar formulasi ransum tidak terganggu.'});
-  if(menipis.length) out.push({sev:'warning', title:'Bahan Baku Menipis ('+menipis.length+' item)', desc:menipis.map(function(r){return r.nama;}).join(', ')+' tersisa di bawah 20% dari stok awal.', rec:'Susun jadwal restock minggu ini untuk mencegah kekosongan bahan.'});
-
-  // 9. Alat berat servis
-  var lowEquip = (D.alatBerat||[]).filter(function(u){ return u.sisaServis!==null && u.sisaServis<=25; });
-  if(lowEquip.length) out.push({sev:'warning', title:'Alat Berat Perlu Servis Segera', desc:lowEquip.map(function(u){return u.unit+' ('+fmt(u.sisaServis,1)+' jam)';}).join(', ')+'.', rec:'Jadwalkan servis preventif sebelum sisa jam habis untuk menghindari downtime operasional feeding.'});
-
-  if(!out.length) out.push({sev:'ok', title:'Tidak Ada Indikator Kritis', desc:'Seluruh metrik utama berada dalam rentang wajar berdasarkan data terbaru.', rec:'Lanjutkan monitoring rutin harian.'});
-
-  var order = {danger:0, warning:1, ok:2};
-  out.sort(function(a,b){ return order[a.sev]-order[b.sev]; });
-  return out;
-}
-
-function renderInsights(D){
-  var box = document.getElementById('insight-list'); box.innerHTML='';
-  var list = buildInsights(D);
-  list.forEach(function(it, i){
-    var ico = it.sev==='danger'?ICO_WARN:(it.sev==='warning'?ICO_WARN:ICO_OK);
-    var sevLabel = it.sev==='danger'?'Kritis':(it.sev==='warning'?'Perhatian':'Baik');
-    var el = document.createElement('div'); el.className='insight '+it.sev+' reveal'; el.style.animationDelay=(i*50)+'ms';
-    el.setAttribute('data-testid','insight-'+i);
-    el.innerHTML = '<div class="iico">'+svg(ico)+'</div><div style="flex:1">'+
-      '<h4>'+it.title+'<span class="sev-tag">'+sevLabel+'</span></h4>'+
-      '<p>'+it.desc+'</p>'+
-      '<div class="rec"><b>Rekomendasi:</b> '+it.rec+'</div></div>';
-    box.appendChild(el);
-  });
 }
 
 var STATE = { data:null, days:30, tv:false, tvTimer:null };
@@ -1077,11 +1035,11 @@ function renderDashboard(D){
   renderDetailTabs();
   renderNutriTabs();
   renderNutriCards(D);
+  renderDmiAdmTabs();
   applyRange(STATE.days);
   renderSilo(D.stokSilase);
   renderEquip(D.alatBerat);
   renderStok(D.stokBahanKering);
-  renderInsights(D);
   hideLoader();
 }
 
@@ -1090,6 +1048,7 @@ function applyRange(days){
   if(!STATE.data) return;
   renderCharts(STATE.data, days);
   renderNutriChart(STATE.data, days);
+  renderDmiAdmChart(STATE.data, days);
   renderStats(STATE.data);
   renderDetailTable();
   document.getElementById('range-label').textContent = labelForRange(STATE.data, days);
@@ -1127,7 +1086,172 @@ document.getElementById('range-sel').addEventListener('click', function(e){
   applyRange(parseInt(b.getAttribute('data-d'),10));
 });
 
-document.getElementById('pdf-btn').addEventListener('click', function(){ window.print(); });
+/* =========================================================
+   UNDUH LAPORAN PDF — Laporan Eksekutif (Data & Grafik)
+   ========================================================= */
+var PDF_CHART_SECTIONS = [
+  { section:'Produksi Susu', items:[
+    {id:'c-totalprod', title:'Total Produksi Susu (Liter/hari)'},
+    {id:'c-perekor', title:'Produksi per Ekor Laktasi (L/ekor)'},
+    {id:'c-admgrup', title:'ADM per Grup Laktasi (L/ekor)'},
+    {id:'c-yieldtmr', title:'Milk Yield / kg TMR'}
+  ]},
+  { section:'DMI vs ADM per Grup', items:[
+    {id:'c-dmiadm', title:function(){ var g=DMIADM_GROUPS.filter(function(x){return x.key===DASTATE.group;})[0]; return 'DMI vs ADM — Grup '+(g?g.label:''); }}
+  ]},
+  { section:'Populasi Ternak', items:[
+    {id:'c-populasi', title:'Populasi per Grup (ekor)'}
+  ]},
+  { section:'Pakan & Efisiensi', items:[
+    {id:'c-feedcost', title:'Biaya Pakan Harian (Rp)'},
+    {id:'c-labarugi', title:'Laba / Rugi Harian (Rp)'},
+    {id:'c-fcr', title:'FCR (kg DM/L)'},
+    {id:'c-fcperl', title:'Feed Cost / Liter Susu (Rp/L)'}
+  ]},
+  { section:'Kualitas Susu', items:[
+    {id:'c-milk', title:'Komponen Susu — Fat & Protein (%)'},
+    {id:'c-milkts', title:'Total Solid (%)'}
+  ]},
+  { section:'Nutrisi TMR per Status', items:[
+    {id:'c-nutri', title:function(){ var g=NUTRI_GROUPS.filter(function(x){return x.key===NSTATE.group;})[0]; return 'Tren Nutrisi TMR — Grup '+(g?g.label:''); }}
+  ]},
+  { section:'Intake, Waste & Dry Matter', items:[
+    {id:'c-intakeafi', title:'Intake vs Tonase AFI (kg)'},
+    {id:'c-waste', title:'Persentase Waste (%)'},
+    {id:'c-dm', title:'Rata-rata Dry Matter (%)'},
+    {id:'c-dim', title:'DIM per Grup (hari)'}
+  ]}
+];
+
+function generatePDFReport(){
+  if(!STATE.data){ alert('Data belum selesai dimuat, coba lagi sebentar.'); return; }
+  var btn = document.getElementById('pdf-btn');
+  var btnTxt = document.getElementById('pdf-btn-txt');
+  var oldTxt = btnTxt.textContent;
+  btn.disabled = true; btn.style.opacity = '.6'; btnTxt.textContent = 'Menyiapkan…';
+  setTimeout(function(){
+    try{ buildPDFDoc(STATE.data); }
+    catch(err){ console.error(err); alert('Gagal membuat PDF: '+(err&&err.message?err.message:err)); }
+    finally{ btn.disabled=false; btn.style.opacity=''; btnTxt.textContent=oldTxt; }
+  }, 60);
+}
+
+function buildPDFDoc(D){
+  var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+  if(!jsPDFCtor){ alert('Komponen PDF belum termuat (cek koneksi internet), lalu coba lagi.'); return; }
+  var doc = new jsPDFCtor({ unit:'mm', format:'a4', orientation:'portrait' });
+  var pw = doc.internal.pageSize.getWidth();
+  var ph = doc.internal.pageSize.getHeight();
+  var margin = 14, contentW = pw - margin*2;
+  var brand = [31,122,77], ink = [18,35,26], muted = [106,124,114], line=[226,232,227], zebra=[247,250,248];
+  var y = margin;
+
+  function ensureSpace(h){ if(y + h > ph - margin){ doc.addPage(); y = margin; } }
+  function sectionHeading(text){
+    ensureSpace(10);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(brand[0],brand[1],brand[2]);
+    doc.text(String(text).toUpperCase(), margin, y);
+    doc.setDrawColor(line[0],line[1],line[2]); doc.setLineWidth(0.3);
+    doc.line(margin, y+2.2, pw-margin, y+2.2);
+    y += 9; doc.setTextColor(ink[0],ink[1],ink[2]);
+  }
+  var tableStyle = { theme:'grid', styles:{fontSize:8.5, cellPadding:2.4, textColor:ink, lineColor:line}, headStyles:{fillColor:brand, textColor:255, fontStyle:'bold'}, alternateRowStyles:{fillColor:zebra} };
+  function addTable(head, body){
+    doc.autoTable(Object.assign({ startY:y, margin:{left:margin, right:margin}, head:[head], body:body }, tableStyle));
+    y = doc.lastAutoTable.finalY + 10;
+  }
+  function addChart(id, title){
+    var c = document.getElementById(id);
+    if(!c || !c.width || !c.height) return;
+    var titleText = typeof title==='function' ? title() : title;
+    var imgH = 78;
+    ensureSpace(imgH + 8);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(ink[0],ink[1],ink[2]);
+    doc.text(titleText, margin, y); y += 5;
+    try{
+      var data = c.toDataURL('image/png', 1.0);
+      var ratio = c.width / c.height;
+      var w = contentW, h = w/ratio;
+      if(h > imgH){ h = imgH; w = h*ratio; }
+      doc.addImage(data, 'PNG', margin, y, w, h);
+      y += Math.max(h, 4) + 8;
+    }catch(e){ y += 4; }
+  }
+
+  // ---- Cover ----
+  doc.setFillColor(brand[0],brand[1],brand[2]); doc.rect(0,0,pw,34,'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(17);
+  doc.text('LAPORAN EKSEKUTIF — DAIRY FARM', margin, 16);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+  doc.text('Rekap Data Harian · Analisa Produksi & Efisiensi Pakan', margin, 24);
+  y = 44; doc.setTextColor(ink[0],ink[1],ink[2]);
+  var periode = labelForRange(D, STATE.days);
+  var generatedAt = (D.meta && D.meta.generatedAt) || '—';
+  [['Periode data', periode], ['Data diperbarui', String(generatedAt)], ['Laporan dibuat', new Date().toLocaleString('id-ID')]].forEach(function(row){
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text(row[0], margin, y);
+    doc.setFont('helvetica','normal'); doc.text(row[1], margin+40, y); y += 6;
+  });
+  y += 4;
+
+  // ---- KPI Summary ----
+  sectionHeading('Ringkasan Kinerja Harian');
+  var kpiRows = KPI_DEFS.map(function(d){
+    var k = (D.kpi||{})[d.key] || {};
+    var v = k.value;
+    var valStr = d.money ? ('Rp '+fmtC(v)) : (d.pct ? fmt(v*100, d.dec)+'%' : fmt(v, d.dec)+' '+d.unit);
+    var dd = k.delta, deltaStr = '—';
+    if(dd!==null && dd!==undefined && !isNaN(dd) && dd!==0){
+      deltaStr = (dd>0?'+':'−') + (d.pct? fmt(Math.abs(dd)*100,d.dec)+' pp' : (d.money? 'Rp '+fmtC(Math.abs(dd)) : fmt(Math.abs(dd),d.dec)));
+    } else if(dd===0){ deltaStr='Tetap'; }
+    return [d.label, valStr, deltaStr, k.date?fmtDate(k.date):'—'];
+  });
+  addTable(['Metrik','Nilai Terbaru','Perubahan','Tanggal'], kpiRows);
+
+  // ---- Grafik per section ----
+  PDF_CHART_SECTIONS.forEach(function(sec){
+    sectionHeading(sec.section);
+    sec.items.forEach(function(it){ addChart(it.id, it.title); });
+  });
+
+  // ---- Tabel data ----
+  doc.addPage(); y = margin;
+  sectionHeading('Ringkasan Statistik Periode');
+  var statRows = STAT_DEFS.map(function(s){
+    var arr = seriesSlice(D, s.series); var st = statOf(arr, s.key);
+    var fv = function(v){ if(v===null||v===undefined) return '—'; return s.money? 'Rp '+fmtC(v) : (s.pct? fmt(v*100,s.dec)+'%' : fmt(v,s.dec)); };
+    return [s.label+' ('+s.unit+')', st?fv(st.avg):'—', st?fv(st.max):'—', st?fv(st.min):'—'];
+  });
+  addTable(['Metrik','Rata-rata','Tertinggi','Terendah'], statRows);
+
+  ensureSpace(14); sectionHeading('Stok Silase per Bungker');
+  var siloRows = (D.stokSilase||[]).filter(function(r){return String(r.bungker).toUpperCase()!=='TOTAL';}).map(function(r){
+    return [r.bungker, fmt(r.kapasitas,0)+' ton', fmt(r.stockAwal,1), fmt(r.totalIsi,1), fmt(r.totalPakai,1), fmt(r.stockAkhir,1), fmt((r.pctTerisi||0)*100,1)+'%'];
+  });
+  addTable(['Bungker','Kapasitas','Awal','Isi','Pakai','Akhir','% Terisi'], siloRows);
+
+  ensureSpace(14); sectionHeading('Status Alat Berat');
+  var equipRows = (D.alatBerat||[]).map(function(u){ return [u.unit, fmt(u.hm,1), fmt(u.sisaServis,1)+' jam']; });
+  addTable(['Unit','Hour Meter','Sisa Jam Servis'], equipRows);
+
+  ensureSpace(14); sectionHeading('Stok Bahan Kering');
+  var stokRows = (D.stokBahanKering||[]).map(function(r){
+    return [r.nama, r.kategori||'', fmt(r.stockAwal,0), fmt(r.masuk,0), fmt(r.keluar,0), fmt(r.stockAkhir,0), r.status||''];
+  });
+  addTable(['Item','Kategori','Awal','Masuk','Keluar','Akhir','Status'], stokRows);
+
+  // ---- Footer & nomor halaman ----
+  var pageCount = doc.internal.getNumberOfPages();
+  for(var i=1;i<=pageCount;i++){
+    doc.setPage(i);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(muted[0],muted[1],muted[2]);
+    doc.text('Dashboard Eksekutif — Dairy Farm · Sumber: Master Rekap Data Harian', margin, ph-8);
+    doc.text('Halaman '+i+' / '+pageCount, pw-margin, ph-8, {align:'right'});
+  }
+
+  doc.save('Laporan-Eksekutif-DairyFarm-'+(new Date().toISOString().slice(0,10))+'.pdf');
+}
+
+document.getElementById('pdf-btn').addEventListener('click', generatePDFReport);
 
 function setTV(on){
   STATE.tv = on;
